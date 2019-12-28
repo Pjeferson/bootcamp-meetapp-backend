@@ -1,3 +1,6 @@
+#Development
+tmp/
+
 # Logs
 logs
 *.log
