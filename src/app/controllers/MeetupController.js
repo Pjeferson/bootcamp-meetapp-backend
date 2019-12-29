@@ -1,9 +1,15 @@
 import * as Yup from 'yup';
 import Meetup from '../models/Meetup';
-import { parseISO, startOfHour, isBefore } from 'date-fns';
+import { parseISO, isBefore } from 'date-fns';
 
 class MeetupController {
-  async index(req, res) {}
+  async index(req, res) {
+    const meetups = await Meetup.findAll({
+      where: { user_id: req.userId },
+    });
+
+    return res.json(meetups);
+  }
   async show(req, res) {}
   async store(req, res) {
     const schema = Yup.object().shape({
