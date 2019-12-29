@@ -55,9 +55,7 @@ class MeetupController {
       return res.status(400).json({ error: 'Validation fails.' });
     }
 
-    const meetup = await Meetup.findOne({
-      where: { id: req.params.id },
-    });
+    const meetup = await Meetup.findByPk(req.params.id);
 
     if (!meetup) {
       return res.status(400).json({ error: 'Meetup does not exists.' });
@@ -85,7 +83,28 @@ class MeetupController {
 
     return res.json(meetup);
   }
-  async delete(req, res) {}
+  async delete(req, res) {
+    const meetup = await Meetup.findByPk(req.params.id);
+
+    if (!meetup) {
+      return res.status(400).json({ error: 'Meetup does not exists.' });
+    }
+
+    if (meetup.user_id != req.userId) {
+      return res.status(401).json({ error: 'You have not authorization.' });
+    }
+
+    //Validate date
+    if (isBefore(meetup.date, new Date())) {
+      return res
+        .status(400)
+        .json({ error: 'Delete past meetups are not permitted.' });
+    }
+
+    await meetup.destroy();
+
+    return res.send();
+  }
 }
 
 export default new MeetupController();
