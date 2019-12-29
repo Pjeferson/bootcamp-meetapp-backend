@@ -3,9 +3,30 @@ import User from '../models/User';
 import Meetup from '../models/Meetup';
 import { isBefore } from 'date-fns';
 import Subscription from '../models/Subscription';
+import { Op } from 'sequelize';
 
 class SubscriptionController {
-  async index(req, res) {}
+  async index(req, res) {
+    const subscriptions = await Subscription.findAll({
+      where: {
+        user_id: req.userId,
+      },
+      include: [
+        {
+          model: Meetup,
+          where: {
+            //required isn't necessary
+            date: {
+              [Op.gt]: new Date(),
+            },
+          },
+        },
+      ],
+      order: [[Meetup, 'date', 'asc']],
+    });
+
+    return res.json(subscriptions);
+  }
   async show(req, res) {}
   async store(req, res) {
     const schema = Yup.object().shape({
