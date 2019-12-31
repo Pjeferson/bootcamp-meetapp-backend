@@ -1,3 +1,5 @@
+import Mail from '../../lib/Mail';
+
 class SubscriptionMail {
   get key() {
     return 'SubscriptionMail';
@@ -12,8 +14,8 @@ class SubscriptionMail {
       template: 'subscription',
       context: {
         owner: meetup.User.name,
-        meetup: meetup.User.email,
-        user: user.email,
+        meetup: meetup.name,
+        user: user.name,
         email: user.email,
       },
     });
