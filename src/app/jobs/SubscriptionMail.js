@@ -14,7 +14,7 @@ class SubscriptionMail {
       template: 'subscription',
       context: {
         owner: meetup.User.name,
-        meetup: meetup.name,
+        meetup: meetup.title,
         user: user.name,
         email: user.email,
       },
