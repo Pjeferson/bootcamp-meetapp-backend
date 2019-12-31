@@ -1,9 +1,12 @@
 import * as Yup from 'yup';
+import { Op } from 'sequelize';
+import { isBefore } from 'date-fns';
+
 import User from '../models/User';
 import Meetup from '../models/Meetup';
-import { isBefore } from 'date-fns';
 import Subscription from '../models/Subscription';
-import { Op } from 'sequelize';
+import SubscriptionMail from '../jobs/SubscriptionMail';
+import Queue from '../../lib/Queue';
 
 class SubscriptionController {
   async index(req, res) {
@@ -39,7 +42,10 @@ class SubscriptionController {
 
     const { meetup_id } = req.body;
 
-    const meetup = await Meetup.findByPk(meetup_id);
+    const user = await User.findByPk(req.userId);
+    const meetup = await Meetup.findByPk(meetup_id, {
+      include: [User],
+    });
 
     if (!meetup) {
       return res.status(400).json({ error: 'Meetup does not exists.' });
@@ -84,7 +90,10 @@ class SubscriptionController {
       user_id: req.userId,
     });
 
-    //Send email here
+    await Queue.add(SubscriptionMail.key, {
+      meetup,
+      user,
+    });
 
     return res.json(subscription);
   }
