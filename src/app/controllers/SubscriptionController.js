@@ -44,7 +44,12 @@ class SubscriptionController {
 
     const user = await User.findByPk(req.userId);
     const meetup = await Meetup.findByPk(meetup_id, {
-      include: [User],
+      include: [
+        {
+          model: User,
+          as: 'user',
+        },
+      ],
     });
 
     if (!meetup) {

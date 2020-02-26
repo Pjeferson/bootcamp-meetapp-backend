@@ -1,6 +1,7 @@
 import * as Yup from 'yup';
 import Meetup from '../models/Meetup';
 import User from '../models/User';
+import File from '../models/File';
 import { parseISO, isBefore, startOfDay, endOfDay } from 'date-fns';
 import { Op } from 'sequelize';
 
@@ -26,7 +27,13 @@ class MeetupController {
       include: [
         {
           model: User,
+          as: 'user',
           attributes: ['id', 'name', 'email'],
+        },
+        {
+          model: File,
+          as: 'banner',
+          attributes: ['id', 'path', 'url'],
         },
       ],
     });
