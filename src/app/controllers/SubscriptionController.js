@@ -17,6 +17,7 @@ class SubscriptionController {
       include: [
         {
           model: Meetup,
+          as: 'meetup',
           where: {
             //required isn't necessary
             date: {
