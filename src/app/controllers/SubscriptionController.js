@@ -4,6 +4,7 @@ import { isBefore } from 'date-fns';
 
 import User from '../models/User';
 import Meetup from '../models/Meetup';
+import File from '../models/File';
 import Subscription from '../models/Subscription';
 import SubscriptionMail from '../jobs/SubscriptionMail';
 import Queue from '../../lib/Queue';
@@ -24,9 +25,21 @@ class SubscriptionController {
               [Op.gt]: new Date(),
             },
           },
+          include: [
+            {
+              model: User,
+              as: 'user',
+              attributes: ['id', 'name', 'email'],
+            },
+            {
+              model: File,
+              as: 'banner',
+              attributes: ['id', 'path', 'url'],
+            },
+          ],
         },
       ],
-      order: [[Meetup, 'date', 'asc']],
+      order: [['meetup', 'date', 'asc']],
     });
 
     return res.json(subscriptions);
