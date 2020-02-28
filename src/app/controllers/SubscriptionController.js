@@ -1,6 +1,6 @@
 import * as Yup from 'yup';
 import { Op } from 'sequelize';
-import { isBefore } from 'date-fns';
+import { isBefore, subHours } from 'date-fns';
 
 import User from '../models/User';
 import Meetup from '../models/Meetup';
@@ -118,7 +118,34 @@ class SubscriptionController {
     return res.json(subscription);
   }
   async update(req, res) {}
-  async delete(req, res) {}
+  async delete(req, res) {
+    const subscription = await Subscription.findByPk(req.params.id, {
+      include: [
+        {
+          model: Meetup,
+          as: 'meetup',
+        },
+      ],
+    });
+
+    if (subscription.user_id !== req.userId) {
+      return res.status(401).json({
+        error: 'You do not have permission to cancel this subscription.',
+      });
+    }
+
+    const dateWithSub = subHours(subscription.meetup.date, 2);
+
+    if (isBefore(dateWithSub, new Date())) {
+      return res.status(401).json({
+        error: 'You can only cancel subscriptions 2 hours in advanced.',
+      });
+    }
+
+    await subscription.destroy();
+
+    return res.send();
+  }
 }
 
 export default new SubscriptionController();
