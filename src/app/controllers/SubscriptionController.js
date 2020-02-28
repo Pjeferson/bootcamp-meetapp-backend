@@ -90,6 +90,7 @@ class SubscriptionController {
       include: [
         {
           model: Meetup,
+          as: 'meetup',
           required: true, //This is the default value when a 'where' is used
           where: {
             date: meetup.date,
